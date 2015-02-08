@@ -49,7 +49,7 @@ class Canvas(object):
             a += 1
 
     def mark_setup(self):
-        s = 'AU: {:.2f}'.format(self.span)
+        s = 'Radius: {:.2f} AU'.format(self.span)
         a = 0
         for i in s:
             if a >= 0 and a < self.width:
