@@ -6,6 +6,7 @@ Having a little bit of fun.
 
     usage: asciiplanets [-h] [--outer] [--offset OFFSET] [--size SIZE]
                         [--font-aspect FONT_ASPECT] [--no-colors]
+                        [--no-trailing-newline]
     
     Show planets in our solar system
     
@@ -18,6 +19,9 @@ Having a little bit of fun.
                             Aspect ratio of your terminal's font (x / y) (default:
                             0.5)
       --no-colors           Disable colors (default: False)
+      --no-trailing-newline, -T
+                            Do not print a newline after the last row (default:
+                            False)
 
 Dependencies:
 

@@ -63,11 +63,12 @@ class Canvas(object):
             return
         self.data[int(sy) * self.width + int(sx)] = c
 
-    def show(self):
+    def show(self, no_trailing_newline):
         for y in range(self.height):
             for x in range(self.width):
                 sys.stdout.write(self.data[y * self.width + x])
-            sys.stdout.write('\n')
+            if not no_trailing_newline or y + 1 < self.height - 1:
+                sys.stdout.write('\n')
 
 def pos(body, offset):
     body.compute(datetime.utcnow() + offset)
@@ -113,6 +114,8 @@ if __name__ == '__main__':
     parser.add_argument('--font-aspect', type=float, default=0.5,
                         help='Aspect ratio of your terminal\'s font (x / y)')
     parser.add_argument('--no-colors', action='store_true', help='Disable colors')
+    parser.add_argument('--no-trailing-newline', '-T', action='store_true',
+                        help='Do not print a newline after the last row')
     args = parser.parse_args()
 
     offset = timedelta(days=args.offset)
@@ -162,4 +165,4 @@ if __name__ == '__main__':
 
     canvas.set_position(chars['_SUN'], 0, 0)
 
-    canvas.show()
+    canvas.show(args.no_trailing_newline)
