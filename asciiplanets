@@ -78,23 +78,37 @@ def pos(body, offset):
 
     x = r * cos(b) * cos(l)
     y = r * cos(b) * sin(l)
-    return (x, y)
+    return (x, y, l, b)
 
 def orbit(body, canvas):
     # Very rough approximation of sidereal orbit using Kepler's third
-    # law. To account for a rather large error (i.e., to get a closed
-    # orbit), just multiply the result with 1.5.
+    # law. We do this only to get a good estimate on the required step
+    # size.
     body.compute()
     r = body.sun_distance if body.name != 'Sun' else body.earth_distance
     r *= 149597870700
     approx_T = sqrt(4 * ephem.pi**2 / (6.67384e-11 * 1.9884e30) * r**3)
-    approx_T *= 1.5
     approx_T_days = approx_T / (60 * 60 * 24)
 
+    # We'd like to draw 128 steps but we don't know the step size to do
+    # so. Thus, we just keep drawing until we covered 360 degree. This
+    # might result in more than 128 steps (or less).
     steps = 128
-    for i in range(steps):
-        x, y = pos(body, timedelta(days=i / steps * approx_T_days))
+    last_l = None
+    asum = 0
+    i = 0
+    while True:
+        x, y, l, _ = pos(body, timedelta(days=i / steps * approx_T_days))
+        if not last_l is None:
+            delta = l - last_l
+            if delta < 0:
+                delta += 2 * ephem.pi
+            asum += delta
+        if asum >= 2 * ephem.pi:
+            break
+        last_l = l
         canvas.set_position('.', x, y)
+        i += 1
 
 def termsize():
     fd = sys.stdout.fileno()
@@ -165,7 +179,8 @@ if __name__ == '__main__':
         orbit(b, canvas)
 
     for b in bodies:
-        canvas.set_position(chars[b.name], *pos(b, offset))
+        x, y, _, _ = pos(b, offset)
+        canvas.set_position(chars[b.name], x, y)
 
     canvas.set_position(chars['_SUN'], 0, 0)
 
