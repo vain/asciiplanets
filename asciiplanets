@@ -109,6 +109,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Show planets in our solar system',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--outer', action='store_true', help='Show outer solar system')
+    parser.add_argument('--radius', type=float, help='Maximum radius to show')
     parser.add_argument('--offset', type=int, default=0, help='Time offset in days')
     parser.add_argument('--size', type=str, default='auto', help='Terminal size, e.g. "80x24"')
     parser.add_argument('--font-aspect', type=float, default=0.5,
@@ -125,7 +126,10 @@ if __name__ == '__main__':
     else:
         width, height = [int(i) for i in args.size.split('x')]
 
-    canvas = Canvas(width, height, args.font_aspect, inner=not args.outer, outer=args.outer)
+    if args.radius:
+        canvas = Canvas(width, height, args.font_aspect, span=args.radius)
+    else:
+        canvas = Canvas(width, height, args.font_aspect, inner=not args.outer, outer=args.outer)
     canvas.mark_date(offset)
     canvas.mark_setup()
 
