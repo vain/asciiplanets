@@ -6,7 +6,11 @@ from math import cos, sin, sqrt
 
 import argparse
 import ephem
+import fcntl
+import os
+import struct
 import sys
+import termios
 
 
 class Canvas(object):
@@ -91,14 +95,21 @@ def orbit(body, canvas):
         x, y = pos(body, timedelta(days=i / steps * approx_T_days))
         canvas.set_position('.', x, y)
 
+def termsize():
+    fd = sys.stdout.fileno()
+    if os.isatty(fd):
+        height, width = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, 'aaaa'))
+        return width, height
+    else:
+        return 80, 24
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Show planets in our solar system',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--outer', action='store_true', help='Show outer solar system')
     parser.add_argument('--offset', type=int, default=0, help='Time offset in days')
-    parser.add_argument('--width', type=int, default=80, help='Terminal width')
-    parser.add_argument('--height', type=int, default=24, help='Terminal height')
+    parser.add_argument('--size', type=str, default='auto', help='Terminal size, e.g. "80x24"')
     parser.add_argument('--font-aspect', type=float, default=0.5,
                         help='Aspect ratio of your terminal\'s font (x / y)')
     parser.add_argument('--no-colors', action='store_true', help='Disable colors')
@@ -106,8 +117,12 @@ if __name__ == '__main__':
 
     offset = timedelta(days=args.offset)
 
-    canvas = Canvas(args.width, args.height, args.font_aspect,
-                    inner=not args.outer, outer=args.outer)
+    if args.size == 'auto':
+        width, height = termsize()
+    else:
+        width, height = [int(i) for i in args.size.split('x')]
+
+    canvas = Canvas(width, height, args.font_aspect, inner=not args.outer, outer=args.outer)
     canvas.mark_date(offset)
     canvas.mark_setup()
 

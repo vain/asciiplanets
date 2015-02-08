@@ -4,9 +4,8 @@ Having a little bit of fun.
 
 ![asciiplanets animated](/asciiplanets-animated.gif?raw=true)
 
-    usage: asciiplanets [-h] [--outer] [--offset OFFSET] [--width WIDTH]
-                        [--height HEIGHT] [--font-aspect FONT_ASPECT]
-                        [--no-colors]
+    usage: asciiplanets [-h] [--outer] [--offset OFFSET] [--size SIZE]
+                        [--font-aspect FONT_ASPECT] [--no-colors]
     
     Show planets in our solar system
     
@@ -14,8 +13,7 @@ Having a little bit of fun.
       -h, --help            show this help message and exit
       --outer               Show outer solar system (default: False)
       --offset OFFSET       Time offset in days (default: 0)
-      --width WIDTH         Terminal width (default: 80)
-      --height HEIGHT       Terminal height (default: 24)
+      --size SIZE           Terminal size, e.g. "80x24" (default: auto)
       --font-aspect FONT_ASPECT
                             Aspect ratio of your terminal's font (x / y) (default:
                             0.5)
