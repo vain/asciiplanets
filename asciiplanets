@@ -1,0 +1,150 @@
+#!/usr/bin/env python
+
+
+from datetime import datetime, timedelta
+from math import cos, sin, sqrt
+
+import argparse
+import ephem
+import sys
+
+
+class Canvas(object):
+    def __init__(self, width, height, font_aspect,
+                 inner=False, outer=False, span=2.0):
+        self.width = width
+        self.height = height
+        self.data = [' ' for i in range(width * height)]
+
+        if inner:
+            self.span = 1.6
+        elif outer:
+            self.span = 31.0
+        else:
+            self.span = span
+
+        # If, for example, your font is 16 pixels high and 8 pixels
+        # wide, then font_aspect = 8 / 16 = 0.5. For each character in y
+        # direction, you then need 2 characters in x direction to create
+        # a square.
+        self.apparent_width = self.width * font_aspect
+
+        if self.apparent_width > self.height:
+            self.span_x = self.span / self.height * self.apparent_width
+            self.span_y = self.span
+        else:
+            self.span_x = self.span
+            self.span_y = self.span / self.apparent_width * self.height
+
+    def mark_date(self, offset):
+        s = (datetime.utcnow() + offset).strftime('%F')
+        a = self.width - len(s)
+        for i in s:
+            if a < self.width:
+                self.data[a] = i
+            a += 1
+
+    def mark_setup(self):
+        s = 'AU: {:.2f}'.format(self.span)
+        a = 0
+        for i in s:
+            if a < self.width:
+                self.data[a] = i
+            a += 1
+
+    def set_position(self, c, x, y):
+        sx = 0.5 * (x / self.span_x + 1) * self.width
+        sy = 0.5 * (-y / self.span_y + 1) * self.height
+        if sx < 0 or sx >= self.width or sy < 0 or sy >= self.height:
+            return
+        self.data[int(sy) * self.width + int(sx)] = c
+
+    def show(self):
+        for y in range(self.height):
+            for x in range(self.width):
+                sys.stdout.write(self.data[y * self.width + x])
+            sys.stdout.write('\n')
+
+def pos(body, offset):
+    body.compute(datetime.utcnow() + offset)
+    r = body.sun_distance if body.name != 'Sun' else body.earth_distance
+    l = body.hlon
+    b = body.hlat
+
+    x = r * cos(b) * cos(l)
+    y = r * cos(b) * sin(l)
+    return (x, y)
+
+def orbit(body, canvas):
+    # Very rough approximation of sidereal orbit using Kepler's third
+    # law. To account for a rather large error (i.e., to get a closed
+    # orbit), just multiply the result with 1.5.
+    body.compute()
+    r = body.sun_distance if body.name != 'Sun' else body.earth_distance
+    r *= 149597870700
+    approx_T = sqrt(4 * ephem.pi**2 / (6.67384e-11 * 1.9884e30) * r**3)
+    approx_T *= 1.5
+    approx_T_days = approx_T / (60 * 60 * 24)
+
+    steps = 128
+    for i in range(steps):
+        x, y = pos(body, timedelta(days=i / steps * approx_T_days))
+        canvas.set_position('.', x, y)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Show planets in our solar system',
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--outer', action='store_true', help='Show outer solar system')
+    parser.add_argument('--offset', type=int, default=0, help='Time offset in days')
+    parser.add_argument('--width', type=int, default=80, help='Terminal width')
+    parser.add_argument('--height', type=int, default=24, help='Terminal height')
+    parser.add_argument('--font-aspect', type=float, default=0.5,
+                        help='Aspect ratio of your terminal\'s font (x / y)')
+    parser.add_argument('--no-colors', action='store_true', help='Disable colors')
+    args = parser.parse_args()
+
+    offset = timedelta(days=args.offset)
+
+    canvas = Canvas(args.width, args.height, args.font_aspect,
+                    inner=not args.outer, outer=args.outer)
+    canvas.mark_date(offset)
+    canvas.mark_setup()
+
+    if args.no_colors:
+        chars = {
+            'Mercury': 'm',
+            'Venus': 'V',
+            'Sun': 'E',      # pyephem class "Sun" is used to calc Earth
+            'Mars': 'M',
+            'Jupiter': 'J',
+            'Saturn': 'S',
+            'Uranus': 'U',
+            'Neptune': 'N',
+            '_SUN': 'S',
+        }
+    else:
+        chars = {
+            'Mercury': 'm',
+            'Venus': '\033[33mV\033[0m',
+            'Sun': '\033[34mE\033[0m',
+            'Mars': '\033[31mM\033[0m',
+            'Jupiter': '\033[31;1mJ\033[0m',
+            'Saturn': '\033[33ms\033[0m',
+            'Uranus': '\033[34;1mU\033[0m',
+            'Neptune': '\033[36mN\033[0m',
+            '_SUN': '\033[33;1mS\033[0m',
+        }
+
+    bodies = [ephem.Mercury(), ephem.Venus(), ephem.Sun(), ephem.Mars(),
+              ephem.Jupiter(), ephem.Saturn(), ephem.Uranus(), ephem.Neptune()]
+
+    for b in bodies:
+        orbit(b, canvas)
+
+    for b in bodies:
+        canvas.set_position(chars[b.name], *pos(b, offset))
+
+    canvas.set_position(chars['_SUN'], 0, 0)
+
+    canvas.show()
