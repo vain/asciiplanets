@@ -44,7 +44,7 @@ class Canvas(object):
         s = (datetime.utcnow() + offset).strftime('%F')
         a = self.width - len(s)
         for i in s:
-            if a < self.width:
+            if a >= 0 and a < self.width:
                 self.data[a] = i
             a += 1
 
@@ -52,7 +52,7 @@ class Canvas(object):
         s = 'AU: {:.2f}'.format(self.span)
         a = 0
         for i in s:
-            if a < self.width:
+            if a >= 0 and a < self.width:
                 self.data[a] = i
             a += 1
 
