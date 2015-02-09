@@ -21,9 +21,9 @@ class Canvas(object):
         self.data = [' ' for i in range(width * height)]
 
         if inner:
-            self.span = 1.6
+            self.span = 1.75
         elif outer:
-            self.span = 31.0
+            self.span = 31.9
         else:
             self.span = span
 
