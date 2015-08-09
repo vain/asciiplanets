@@ -5,8 +5,8 @@ Having a little bit of fun.
 ![asciiplanets animated](/asciiplanets-animated.gif?raw=true)
 
     usage: asciiplanets [-h] [--outer] [--radius RADIUS] [--offset OFFSET]
-                        [--size SIZE] [--font-aspect FONT_ASPECT] [--no-colors]
-                        [--no-trailing-newline]
+                        [--size SIZE] [--crosshair] [--font-aspect FONT_ASPECT]
+                        [--no-colors] [--no-trailing-newline]
     
     Show planets in our solar system
     
@@ -16,6 +16,7 @@ Having a little bit of fun.
       --radius RADIUS       Maximum radius to show (default: None)
       --offset OFFSET       Time offset in days (default: 0)
       --size SIZE           Terminal size, e.g. "80x24" (default: auto)
+      --crosshair, -c       Draw a crosshair aiming at the sun (default: False)
       --font-aspect FONT_ASPECT
                             Aspect ratio of your terminal's font (x / y) (default:
                             0.5)
