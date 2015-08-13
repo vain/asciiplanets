@@ -1,0 +1,67 @@
+.TH asciiplanets 1 "2015-08-13" "asciiplanets" "User Commands"
+.\" --------------------------------------------------------------------
+.SH NAME
+asciiplanets \- ASCII solar system observer
+.\" --------------------------------------------------------------------
+.SH SYNOPSIS
+\fBasciiplanets\fP
+[\fB\-\-crosshair\fP|\fB\-c\fP]
+[\fB\-\-font\-aspect\fP \fIFONT_ASPECT\fP]
+[\fB\-\-help\fP|\fB\-h\fP]
+[\fB\-\-no\-colors\fP]
+[\fB\-\-no\-trailing\-newline\fP|\fB\-T\fP]
+[\fB\-\-offset\fP \fIOFFSET\fP]
+[\fB\-\-outer\fP]
+[\fB\-\-radius\fP \fIRADIUS\fP]
+[\fB\-\-size\fP \fISIZE\fP]
+.\" --------------------------------------------------------------------
+.SH DESCRIPTION
+Show planets in our solar system using simple ASCII characters and some
+ANSI espace codes (if you chose to).
+.\" --------------------------------------------------------------------
+.SH OPTIONS
+.TP
+\fB\-\-crosshair\fP, \fB\-c\fP
+Draw a crosshair aiming at the sun. Equinoxes occur when the earth
+passes the horizontal line, solstices occur when the earth passes the
+vertical line. The \(lqleft\(rq equinox happens around March.
+.TP
+\fB\-\-font\-aspect\fP \fIFONT_ASPECT\fP
+Set font aspect ratio (width / height). Defaults to \fB0.5\fP.
+.TP
+\fB\-h\fP, \fB\-\-help\fP
+Show a brief help summary.
+.TP
+\fB\-\-no\-colors\fP
+Disable colors.
+.TP
+\fB\-\-no\-trailing\-newline\fP
+Do not print a newline after the last row.
+.TP
+\fB\-\-offset\fP \fIOFFSET\fP
+Time offset in days.
+.TP
+\fB\-\-outer\fP
+Show outer solar system. By default, the inner solar system is shown.
+.TP
+\fB\-\-radius\fP \fIRADIUS\fP
+Maximum radius to show, in astronomical units. This is an alternative to
+\fB\-\-outer\fP.
+.TP
+\fB\-\-size\fP \fISIZE\fP
+Terminal size, e.g. \fB80x24\fP. If set to \fBauto\fP (the default), let
+\fBasciiplanets\fP find out the current size.
+.\" --------------------------------------------------------------------
+.SH DEPENDENCIES
+.IP \(bu 4
+Python 3
+.IP \(bu 4
+pyephem
+.\" --------------------------------------------------------------------
+.SH LICENSE
+\fBasciiplanets\fP is released as \(lqPIZZA-WARE\(rq. See the
+accompanying \fILICENSE\fP file.
+.\" --------------------------------------------------------------------
+.SH HISTORY
+\fBasciiplanets\fP was originally written by Peter Hofmann. The project
+was started in February 2015.
