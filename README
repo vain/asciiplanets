@@ -1,0 +1,66 @@
+asciiplanets(1)              User Commands             asciiplanets(1)
+
+
+
+NAME
+       asciiplanets - ASCII solar system observer
+
+SYNOPSIS
+       asciiplanets   [--crosshair|-c]   [--font-aspect   FONT_ASPECT]
+       [--help|-h] [--no-colors] [--no-trailing-newline|-T]  [--offset
+       OFFSET] [--outer] [--radius RADIUS] [--size SIZE]
+
+DESCRIPTION
+       Show  planets in our solar system using simple ASCII characters
+       and some ANSI espace codes (if you chose to).
+
+OPTIONS
+       --crosshair, -c
+              Draw a crosshair aiming at the sun. Equinoxes occur when
+              the  earth  passes  the horizontal line, solstices occur
+              when the earth passes  the  vertical  line.  The  “left”
+              equinox happens around March.
+
+       --font-aspect FONT_ASPECT
+              Set font aspect ratio (width / height). Defaults to 0.5.
+
+       -h, --help
+              Show a brief help summary.
+
+       --no-colors
+              Disable colors.
+
+       --no-trailing-newline
+              Do not print a newline after the last row.
+
+       --offset OFFSET
+              Time offset in days.
+
+       --outer
+              Show  outer  solar  system.  By default, the inner solar
+              system is shown.
+
+       --radius RADIUS
+              Maximum radius to show, in astronomical units.  This  is
+              an alternative to --outer.
+
+       --size SIZE
+              Terminal size, e.g. 80x24. If set to auto (the default),
+              let asciiplanets find out the current size.
+
+DEPENDENCIES
+       ·   Python 3
+
+       ·   pyephem
+
+LICENSE
+       asciiplanets is released as “PIZZA-WARE”. See the  accompanying
+       LICENSE file.
+
+HISTORY
+       asciiplanets  was  originally  written  by  Peter  Hofmann. The
+       project was started in February 2015.
+
+
+
+asciiplanets                  2015-08-13               asciiplanets(1)
