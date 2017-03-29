@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+show()
+{
+    when=$(date -d "now + $offset_d days + $offset_m months + $offset_y years" \
+           '+%Y-%m-%d')
+    radius_float=$(echo "1.75 * 1.1^$radius_pow" | bc -l)
+
+    tput home
+    asciiplanets -T --date "$when" --radius "$radius_float" "$@"
+}
+
+offset_d=0
+offset_m=0
+offset_y=0
+radius_pow=0
+
+trap 'tput cnorm; stty echo' EXIT
+tput civis
+stty -echo
+
+show "$@"
+while read -N 1
+do
+    case "$REPLY" in
+        d) (( offset_d++ )) ;;
+        D) (( offset_d-- )) ;;
+        m) (( offset_m++ )) ;;
+        M) (( offset_m-- )) ;;
+        y) (( offset_y++ )) ;;
+        Y) (( offset_y-- )) ;;
+        j) (( radius_pow++ )) ;;
+        k) (( radius_pow-- )) ;;
+        i) (( radius_pow = 0 )) ;;
+        o) (( radius_pow = 31 )) ;;
+        n) offset_d=0; offset_m=0; offset_y=0 ;;
+        h) man asciiplanets-interactive ;;
+        q) exit 0 ;;
+    esac
+    show "$@"
+done
