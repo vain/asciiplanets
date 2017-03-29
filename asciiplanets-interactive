@@ -38,4 +38,5 @@ do
         q) exit 0 ;;
     esac
     show "$@"
+    read -t 0.001 -N 65536
 done
