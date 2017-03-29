@@ -1,0 +1,9 @@
+Release history for asciiplanets
+
+next
+  [Added]
+  - You can select a date using "--date YYYY-MM-DD".
+
+v15.09 and earlier releases
+  - Sorry, the CHANGES file did not exist back then. Please refer to the
+    Git log.

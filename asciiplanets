@@ -46,8 +46,8 @@ class Canvas(object):
         for y in range(0, height):
             self.data[int(y * width + 0.5 * width)] = '|'
 
-    def mark_date(self, offset):
-        s = (datetime.utcnow() + offset).strftime('%F')
+    def mark_date(self, base_date, offset):
+        s = (base_date + offset).strftime('%F')
         a = self.width - len(s)
         for i in s:
             if a >= 0 and a < self.width:
@@ -76,8 +76,8 @@ class Canvas(object):
             if not no_trailing_newline or y + 1 < self.height - 1:
                 sys.stdout.write('\n')
 
-def pos(body, offset):
-    body.compute(datetime.utcnow() + offset)
+def pos(body, base_date, offset):
+    body.compute(base_date + offset)
     r = body.sun_distance if body.name != 'Sun' else body.earth_distance
     l = body.hlon
     b = body.hlat
@@ -86,7 +86,7 @@ def pos(body, offset):
     y = r * cos(b) * sin(l)
     return (x, y, l, b)
 
-def orbit(body, canvas):
+def orbit(body, base_date, canvas):
     # Very rough approximation of sidereal orbit using Kepler's third
     # law. We do this only to get a good estimate on the required step
     # size.
@@ -104,7 +104,7 @@ def orbit(body, canvas):
     asum = 0
     i = 0
     while True:
-        x, y, l, _ = pos(body, timedelta(days=i / steps * approx_T_days))
+        x, y, l, _ = pos(body, base_date, timedelta(days=i / steps * approx_T_days))
         if not last_l is None:
             delta = l - last_l
             if delta < 0:
@@ -130,6 +130,7 @@ if __name__ == '__main__':
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--outer', action='store_true', help='Show outer solar system')
     parser.add_argument('--radius', type=float, help='Maximum radius to show')
+    parser.add_argument('--date', type=str, default='now', help='Date to show, YYYY-MM-DD')
     parser.add_argument('--offset', type=int, default=0, help='Time offset in days')
     parser.add_argument('--size', type=str, default='auto', help='Terminal size, e.g. "80x24"')
     parser.add_argument('--crosshair', '-c', action='store_true',
@@ -140,6 +141,12 @@ if __name__ == '__main__':
     parser.add_argument('--no-trailing-newline', '-T', action='store_true',
                         help='Do not print a newline after the last row')
     args = parser.parse_args()
+
+    if args.date == 'now':
+        base_date = datetime.utcnow()
+    else:
+        base_date = datetime.strptime(args.date, '%Y-%m-%d')
+    base_date.replace(hour=12, minute=0, second=0, microsecond=0)
 
     offset = timedelta(days=args.offset)
 
@@ -154,7 +161,7 @@ if __name__ == '__main__':
         canvas = Canvas(width, height, args.font_aspect, inner=not args.outer, outer=args.outer)
     if args.crosshair:
         canvas.mark_crosshair()
-    canvas.mark_date(offset)
+    canvas.mark_date(base_date, offset)
     canvas.mark_setup()
 
     if args.no_colors:
@@ -185,11 +192,15 @@ if __name__ == '__main__':
     bodies = [ephem.Mercury(), ephem.Venus(), ephem.Sun(), ephem.Mars(),
               ephem.Jupiter(), ephem.Saturn(), ephem.Uranus(), ephem.Neptune()]
 
+    # Use a fixed base date for drawing the orbits. This makes sure they
+    # are rendered exactly the same, no matter what base_date or offset
+    # the user chose.
+    orbit_base_date = datetime(2010, 1, 1, hour=0, minute=0, second=0, microsecond=0)
     for b in bodies:
-        orbit(b, canvas)
+        orbit(b, orbit_base_date, canvas)
 
     for b in bodies:
-        x, y, _, _ = pos(b, offset)
+        x, y, _, _ = pos(b, base_date, offset)
         canvas.set_position(chars[b.name], x, y)
 
     canvas.set_position(chars['_SUN'], 0, 0)
