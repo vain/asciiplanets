@@ -1,5 +1,11 @@
 Release history for asciiplanets
 
+next
+  [LICENSING]
+  - The project has been relicensed under the MIT license (more
+    precisely called "Expat License", but everyone calls it "MIT
+    license" these days).
+
 v17.04  2017-04-08
   [Added]
   - You can select a date using "--date YYYY-MM-DD".
